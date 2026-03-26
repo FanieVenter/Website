@@ -1,167 +1,1044 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .Site.Title }}</title>
-    <meta name="description" content="{{ .Site.Params.description }}">
-    <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ .Site.Title }}</title>
+<meta name="description" content="{{ .Site.Params.description }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fcfbf9;
+    --surface: #ffffff;
+    --border: #e6e4df;
+    --border-hover: #d1cfc9;
+    --text: #1a1917;
+    --muted: #6b6863;
+    --tag-bg: #f0eee8;
+    --tag-text: #4a4845;
+    --green: #10b981;
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.07);
+    --shadow-lg: 0 16px 40px rgba(0,0,0,0.09);
+    --mono: 'DM Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--border) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0 1.5rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  @media (max-width: 560px) {
+    nav { gap: 1rem; padding: 0 1rem; }
+    .nav-links { gap: 0.85rem; }
+    .nav-links a { font-size: 0.78rem; }
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 5vw, 3rem);
+  }
+
+  section { padding: 7rem 0; }
+
+  /* ── HERO ── */
+  #hero {
+    padding-top: 10rem;
+    padding-bottom: 7rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s forwards;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--muted);
+  }
+
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(3.5rem, 9vw, 6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .hero-desc {
+    max-width: 540px;
+    color: var(--muted);
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.75;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s forwards;
+  }
+
+  .hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.45s forwards;
+  }
+
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 0.4rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 100px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .chip:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .hero-location {
+    margin-top: 2.5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.55s forwards;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero-location::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.45); }
+    70%  { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+    100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-number {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 3vw, 2.2rem);
+    letter-spacing: -0.01em;
+  }
+
+  /* ── ABOUT ── */
+  #about { border-bottom: 1px solid var(--border); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+  }
+
+  @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 3rem; } }
+
+  .about-text p {
+    color: var(--muted);
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 1.85;
+    margin-bottom: 1.1rem;
+  }
+
+  .about-text p:last-child { margin-bottom: 0; }
+
+  .about-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stat-item {
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-hover);
+  }
+
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-transform: uppercase;
+    text-align: right;
+    max-width: 130px;
+  }
+
+  /* ── WORK ── */
+  #work { border-bottom: 1px solid var(--border); }
+
+  /* Tab switcher */
+  .work-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.3rem;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.5rem 1.1rem;
+    border: none;
+    border-radius: 100px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--text);
+    color: var(--bg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  /* Project cards */
+  .project-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--text);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+  }
+
+  .project-item:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    border-color: var(--border-hover);
+  }
+
+  .project-item:hover::before { transform: scaleY(1); transform-origin: top; }
+
+  .project-domain {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .project-title {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    padding: 0.25rem 0.6rem;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-radius: var(--radius-sm);
+  }
+
+  .project-year {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text);
+    background: var(--bg);
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Status badge variant for school projects */
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .status-completed { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .status-dev       { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+  .status-planning  { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+  @media (max-width: 560px) {
+    .project-item { grid-template-columns: 1fr; }
+  }
+
+  /* ── SKILLS ── */
+  #skills { border-bottom: 1px solid var(--border); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .skill-block {
+    background: var(--surface);
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+  }
+
+  .skill-block:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-hover);
+  }
+
+  .skill-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    background: var(--bg);
+    padding: 0.65rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .skill-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .skill-detail {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  /* ── CONTACT ── */
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) { .contact-layout { grid-template-columns: 1fr; gap: 3rem; } }
+
+  .contact-intro p {
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.85;
+    font-size: 1rem;
+  }
+
+  .contact-detail {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-line {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .contact-line span { color: var(--muted); width: 80px; flex-shrink: 0; }
+
+  .contact-line a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--border);
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .contact-line a:hover { border-color: var(--text); color: var(--green); }
+
+  /* Form */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    background: var(--surface);
+    padding: 2.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .field-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 480px) { .field-group { grid-template-columns: 1fr; } }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .form-field label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    font-weight: 400;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    color: var(--text);
+    outline: none;
+    transition: all 0.2s;
+    appearance: none;
+    width: 100%;
+  }
+
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus {
+    border-color: var(--text);
+    box-shadow: 0 0 0 3px rgba(26,25,23,0.05);
+    background: var(--surface);
+  }
+
+  .form-field textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+
+  .form-field input::placeholder,
+  .form-field textarea::placeholder { color: #b0ada8; }
+
+  .btn-submit {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.88rem;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    align-self: flex-start;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    background: #33312e;
+  }
+
+  .form-note {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .form-success {
+    display: none;
+    padding: 1.1rem;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 0.88rem;
+    color: #065f46;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-copy,
+  .footer-domain {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .footer-domain { color: var(--text); font-weight: 500; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.75s cubic-bezier(0.16,1,0.3,1), transform 0.75s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
 </head>
 <body>
-    <!-- Background Shapes -->
-    <div class="bg-shape shape1"></div>
-    <div class="bg-shape shape2"></div>
-    <div class="bg-shape shape3"></div>
 
-    <!-- Navigation -->
-    <div class="container">
-        <nav>
-            <div class="logo">{{ .Site.Params.author }}</div>
-            <ul class="nav-links">
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">FV.engineer</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-content">
-                <h1>FANIE<br>VENTER</h1>
-                <div class="subtitle">Aspiring Aerospace Engineer & Game Developer</div>
-                <p>Year 10 student with a passion for technology, engineering, and creating innovative solutions. From game development to electric vehicle design, I'm building my future one project at a time.</p>
-                <div class="cta-buttons">
-                    <a href="#projects" class="btn btn-primary">View Projects</a>
-                    <a href="#contact" class="btn btn-secondary">Get in Touch</a>
-                </div>
-            </div>
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <p class="hero-eyebrow">Software &amp; Systems Engineer</p>
+    <h1 class="hero-name">Fanie<br><em>Venter</em></h1>
+    <p class="hero-desc">
+      I build things at the intersection of software and hardware — from embedded systems and custom tooling to mobile apps and game development. Based in New Zealand, aspiring Aerospace Engineer.
+    </p>
+    <div class="hero-chips">
+      <span class="chip">Linux Systems</span>
+      <span class="chip">Embedded / IoT</span>
+      <span class="chip">Android / Kotlin</span>
+      <span class="chip">3D Scanning</span>
+      <span class="chip">Game Dev</span>
+      <span class="chip">EV Engineering</span>
+    </div>
+    <p class="hero-location">{{ .Site.Params.location }} · Open to opportunities</p>
+  </div>
+</section>
 
-            <div class="hero-image">
-                <div class="profile-card">
-                    <div class="profile-img-container">
-                        <img src="{{ "images/profile.jpg" | relURL }}" alt="{{ .Site.Params.author }}">
-                    </div>
-                    <div class="profile-details">
-                        <h3>{{ .Site.Params.author }}</h3>
-                        <div class="role">Year 10 Student</div>
-                        <div class="contact-info">
-                            <div class="contact-item">
-                                <svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
-                                {{ .Site.Params.email }}
-                            </div>
-                            <div class="contact-item">
-                                <svg viewBox="0 0 24 24"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
-                                {{ .Site.Params.location }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <h2 class="section-title">About</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm a hands-on engineer and student with a passion for building things that work — from bare-metal hardware through to polished software. My work spans Linux systems, mobile development, embedded electronics, and competitive EV engineering.
+        </p>
+        <p>
+          I'm most comfortable where precision matters: reproducible builds, clean interfaces, and systems that behave exactly as specified. My academic strengths are in Mathematics and Science, and I'm working toward studying Aerospace Engineering at university.
+        </p>
+        <p>
+          Outside of screens I stay active in endurance sport — triathlon and field hockey — which keeps me disciplined about incremental improvement and long-term goals.
+        </p>
+      </div>
+      <div class="about-stats reveal">
+        <div class="stat-item">
+          <div class="stat-value">1st</div>
+          <div class="stat-label">EVOlocity Efficiency Award</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">2nd</div>
+          <div class="stat-label">EVOlocity Overall, 2025</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Arch</div>
+          <div class="stat-label">Daily driver Linux distro</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">Side projects in progress</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Selected Work</h2>
     </div>
 
-    <!-- About Section -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="section-header">
-                <h2>About Me</h2>
-                <p>Passionate about engineering and innovation</p>
-            </div>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>I'm a Year 10 student at Kingsway Christian School with a strong passion for technology and engineering. My academic strengths lie in Mathematics and Science, where I consistently achieve Merit and Excellence grades.</p>
-                    <p>Beyond academics, I'm actively involved in hands-on engineering projects. I've developed Farmer's Fury, a mobile game using the Godot engine, and competed in EVOlocity 2025 where my team achieved remarkable results including 1st place in Efficiency.</p>
-                    <p>My ultimate goal is to study Aerospace Engineering at university, and I'm constantly working on projects that bring me closer to that dream while gaining real-world experience.</p>
-                </div>
-                <div class="stats">
-                    <div class="stat-card">
-                        <span class="stat-number">2nd</span>
-                        <span class="stat-label">Overall EVOlocity 2025</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">1st</span>
-                        <span class="stat-label">Efficiency Award</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">Merit+</span>
-                        <span class="stat-label">Academic Average</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">3+</span>
-                        <span class="stat-label">Major Projects</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Tab switcher -->
+    <div class="work-tabs reveal">
+      <button class="tab-btn active" onclick="switchTab('engineering')">Engineering</button>
+      <button class="tab-btn" onclick="switchTab('school')">School Projects</button>
+    </div>
 
-    <!-- Projects Section -->
-    <section class="projects" id="projects">
-        <div class="container">
-            <div class="section-header">
-                <h2>Featured Projects</h2>
-                <p>Building the future, one project at a time</p>
-            </div>
-            <div class="project-grid">
-                {{ range (where .Site.RegularPages "Section" "projects") }}
-                <div class="project-card">
-                    <div class="project-image">
-                        {{ if .Params.image }}
-                        <img src="{{ .Params.image | relURL }}" alt="{{ .Title }}">
-                        {{ else }}
-                        {{ .Params.emoji }}
-                        {{ end }}
-                    </div>
-                    <div class="project-content">
-                        <h3>{{ .Title }}</h3>
-                        <p>{{ .Summary }}</p>
-                        <div class="project-details">
-                            {{ if .Params.status }}
-                            <div class="project-meta">
-                                <div class="meta-item">
-                                    <strong>Status:</strong> {{ .Params.status }}
-                                </div>
-                                {{ if .Params.year }}
-                                <div class="meta-item">
-                                    <strong>Year:</strong> {{ .Params.year }}
-                                </div>
-                                {{ end }}
-                            </div>
-                            {{ end }}
-                            <div class="project-tags">
-                                {{ range .Params.tags }}
-                                <span class="tag">{{ . }}</span>
-                                {{ end }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {{ end }}
-            </div>
-        </div>
-    </section>
+    <!-- Engineering projects -->
+    <div class="tab-panel active" id="tab-engineering">
 
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2>Get In Touch</h2>
-                <p>Let's build something amazing together</p>
-            </div>
-            <div class="contact-content">
-                <p>I'm always open to discussing new projects, opportunities, or just connecting with fellow tech and engineering enthusiasts. Feel free to reach out!</p>
-                <div class="contact-buttons">
-                    <a href="mailto:{{ .Site.Params.email }}" class="btn btn-primary">Email Me</a>
-                </div>
-            </div>
+      <div class="project-item reveal">
+        <div>
+          <p class="project-domain">Mobile · Android</p>
+          <h3 class="project-title">Route Tracker App</h3>
+          <p class="project-desc">
+            A GPS-based delivery tracking application for Android. Features OSMDroid offline maps, Room-backed persistent run history, automatic street detection via geofencing, and a tap-to-confirm interaction model built for single-handed use on the move.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Kotlin</span>
+            <span class="tag">Android Studio</span>
+            <span class="tag">Room DB</span>
+            <span class="tag">OSMDroid</span>
+            <span class="tag">FusedLocation</span>
+            <span class="tag">Material 3</span>
+          </div>
         </div>
-    </section>
+        <span class="project-year">2024–25</span>
+      </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 {{ .Site.Params.author }}. All rights reserved.</p>
+      <div class="project-item reveal">
+        <div>
+          <p class="project-domain">Hardware · Computer Vision</p>
+          <h3 class="project-title">Low-Budget Photogrammetry Scanner</h3>
+          <p class="project-desc">
+            A custom 3D scanner built on the OpenScan platform using a Raspberry Pi, stepper motors, and interchangeable camera modules. Evaluating IR ToF sensors (VL53L5CX / L8CX) and global shutter modules (OV9281, IMX219 NoIR) for high-accuracy point cloud capture at a fraction of commercial cost.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">OpenScan</span>
+            <span class="tag">Python</span>
+            <span class="tag">Stepper Motors</span>
+            <span class="tag">VL53L5CX</span>
+            <span class="tag">OV9281</span>
+          </div>
         </div>
-    </footer>
+        <span class="project-year">2025</span>
+      </div>
+
+      <div class="project-item reveal">
+        <div>
+          <p class="project-domain">Linux · GPU / Compute</p>
+          <h3 class="project-title">DaVinci Resolve on ROCm / Arch Linux</h3>
+          <p class="project-desc">
+            End-to-end debugging and configuration to run DaVinci Resolve with full GPU acceleration on an AMD Radeon RX 6600 under CachyOS/Arch Linux. Resolved ROCm 7.2 compatibility issues, mesa-git conflicts, bundled library ABI mismatches, and Intel OneAPI TBB interference.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Arch Linux</span>
+            <span class="tag">ROCm 7.2</span>
+            <span class="tag">AMD RX 6600</span>
+            <span class="tag">mesa-git</span>
+            <span class="tag">DaVinci Resolve</span>
+            <span class="tag">Bash</span>
+          </div>
+        </div>
+        <span class="project-year">2025</span>
+      </div>
+
+      <div class="project-item reveal">
+        <div>
+          <p class="project-domain">Web · Education</p>
+          <h3 class="project-title">Kitten Space Agency — Interactive Website</h3>
+          <p class="project-desc">
+            A multi-page interactive educational website for a space science platform. Delivered as a single self-contained HTML file with a purple/blue theme system, glassmorphism UI, and responsive layout — no build tools, no dependencies.
+          </p>
+          <div class="project-tags">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">Vanilla JS</span>
+            <span class="tag">Glassmorphism</span>
+            <span class="tag">Responsive</span>
+          </div>
+        </div>
+        <span class="project-year">2024</span>
+      </div>
+
+    </div>
+
+    <!-- School / Hugo projects (pulled from content/projects/) -->
+    <div class="tab-panel" id="tab-school">
+      {{ range (where .Site.RegularPages "Section" "projects") }}
+      <div class="project-item reveal">
+        <div>
+          {{ with .Params.emoji }}<p class="project-domain">{{ . }} {{ if $.Params.domain }}{{ $.Params.domain }}{{ else }}School Project{{ end }}</p>{{ end }}
+          <h3 class="project-title">{{ .Title }}</h3>
+          <p class="project-desc">{{ .Summary }}</p>
+          <div class="project-tags">
+            {{ range .Params.tags }}
+            <span class="tag">{{ . }}</span>
+            {{ end }}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;flex-shrink:0;">
+          {{ with .Params.year }}<span class="project-year">{{ . }}</span>{{ end }}
+          {{ with .Params.status }}
+          <span class="status-badge {{ if eq . "Completed" }}status-completed{{ else if eq . "In Development" }}status-dev{{ else }}status-planning{{ end }}">{{ . }}</span>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Skills &amp; Tools</h2>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-block">
+        <span class="skill-icon">🐧</span>
+        <p class="skill-name">Linux Systems</p>
+        <p class="skill-detail">Arch / CachyOS<br>Pacman / AUR · Systemd<br>Shell scripting · ROCm</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">📱</span>
+        <p class="skill-name">Android / Kotlin</p>
+        <p class="skill-detail">Android Studio · Jetpack<br>Room · FusedLocation<br>Material 3 · OSMDroid</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">🔩</span>
+        <p class="skill-name">Embedded / Electronics</p>
+        <p class="skill-detail">Raspberry Pi · GPIO<br>Stepper motor control<br>I²C / SPI sensors</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">📷</span>
+        <p class="skill-name">Vision / 3D</p>
+        <p class="skill-detail">Photogrammetry · OpenScan<br>ToF · Global shutter<br>Point cloud capture</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">🎮</span>
+        <p class="skill-name">Game Development</p>
+        <p class="skill-detail">Godot Engine · GDScript<br>Mobile-first design<br>Touch controls</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">⚡</span>
+        <p class="skill-name">EV Engineering</p>
+        <p class="skill-detail">Electric vehicle design<br>Efficiency optimisation<br>Prototyping &amp; testing</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">🌐</span>
+        <p class="skill-name">Web Development</p>
+        <p class="skill-detail">HTML · CSS · JS<br>Hugo static sites<br>Responsive UI</p>
+      </div>
+      <div class="skill-block">
+        <span class="skill-icon">🔧</span>
+        <p class="skill-name">Tooling &amp; Workflow</p>
+        <p class="skill-detail">Git · Vim · Bash<br>AUR packaging<br>Reproducible builds</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Get in Touch</h2>
+    </div>
+    <div class="contact-layout">
+      <div class="contact-intro reveal">
+        <p>
+          Whether you have a project in mind, a technical problem to solve, or just want to connect — I'm happy to hear from you.
+        </p>
+        <p style="margin-top:0.9rem;">
+          I'm particularly interested in opportunities involving embedded systems, Linux infrastructure, mobile development, and aerospace engineering.
+        </p>
+        <div class="contact-detail">
+          <p class="contact-line"><span>Domain</span> <a href="https://{{ .Site.BaseURL | replaceRE "https?://" "" | strings.TrimSuffix "/" }}">fanie-venter.engineer</a></p>
+          <p class="contact-line"><span>Location</span> {{ .Site.Params.location }}</p>
+          <p class="contact-line"><span>Email</span> <a href="mailto:{{ .Site.Params.email }}">{{ .Site.Params.email }}</a></p>
+          <p class="contact-line"><span>Status</span> Open to opportunities</p>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="field-group">
+            <div class="form-field">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="Your name" required>
+            </div>
+            <div class="form-field">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject">
+              <option value="">Select a topic…</option>
+              <option value="project">Project inquiry</option>
+              <option value="contract">Contract / freelance</option>
+              <option value="collab">Collaboration</option>
+              <option value="aerospace">Aerospace / Engineering</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell me what you're working on…" required></textarea>
+          </div>
+          <div class="form-success" id="formSuccess">
+            ✓ Message sent — I'll get back to you soon.
+          </div>
+          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+            <button type="submit" class="btn-submit">Send Message</button>
+            <p class="form-note">No spam, no newsletters.<br>Just a direct reply.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <p class="footer-copy">© 2025 {{ .Site.Params.author }}. All rights reserved.</p>
+      <p class="footer-domain">fanie-venter.engineer</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Stagger skill blocks
+  document.querySelectorAll('.skill-block').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.05}s`;
+  });
+
+  // Tab switcher
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+    document.getElementById(`tab-${name}`).classList.add('active');
+    // Re-trigger reveal for newly visible items
+    document.querySelectorAll(`#tab-${name} .reveal`).forEach(el => {
+      el.classList.remove('visible');
+      setTimeout(() => observer.observe(el), 10);
+    });
+  }
+
+  // Contact form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-submit');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    // Replace setTimeout below with a fetch() to your Formspree/Netlify endpoint
+    setTimeout(() => {
+      e.target.reset();
+      btn.style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    }, 1200);
+  }
+</script>
+
 </body>
 </html>
