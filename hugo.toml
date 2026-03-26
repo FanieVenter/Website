@@ -1,14 +1,11 @@
 baseURL = 'https://fanie-venter.engineer/'
 languageCode = 'en-us'
-title = 'Fanie Venter - Portfolio'
+title = 'Fanie Venter'
 
 [params]
-  author = 'Fanie Venter'
-  description = 'Year 10 Student | Aspiring Aerospace Engineer | Game Developer'
-  email = 'georgesventer@gmail.com'
-  location = 'Auckland, New Zealand'
-
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
+  author     = 'Fanie Venter'
+  description = 'Software & Systems Engineer based in Auckland, NZ'
+  email      = 'georgesventer@gmail.com'
+  location   = 'Auckland, New Zealand'
+  status     = 'Open to opportunities'
+  github     = 'https://github.com/fanieventer'
