@@ -29,6 +29,37 @@
     --sans: 'DM Sans', sans-serif;
   }
 
+  [data-theme="dark"] {
+    --bg: #111110;
+    --surface: #1c1b19;
+    --border: #2e2c29;
+    --border-hover: #3d3b37;
+    --text: #f0ede8;
+    --muted: #8a8680;
+    --tag-bg: #252320;
+    --tag-text: #a8a49f;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+    --shadow-lg: 0 16px 40px rgba(0,0,0,0.4);
+  }
+
+  /* System preference fallback */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111110;
+      --surface: #1c1b19;
+      --border: #2e2c29;
+      --border-hover: #3d3b37;
+      --text: #f0ede8;
+      --muted: #8a8680;
+      --tag-bg: #252320;
+      --tag-text: #a8a49f;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+      --shadow-lg: 0 16px 40px rgba(0,0,0,0.4);
+    }
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
 
@@ -43,6 +74,31 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+    background: var(--tag-bg);
+  }
+
   /* ── NAV ── */
   nav {
     position: fixed;
@@ -50,9 +106,22 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
-    background: rgba(255,255,255,0.88);
+    background: rgba(252,251,249,0.88);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+  }
+
+  [data-theme="dark"] nav {
+    background: rgba(17,17,16,0.88);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) nav {
+      background: rgba(17,17,16,0.88);
+    }
+  }
+
+  nav {
     border: 1px solid var(--border);
     border-radius: 100px;
     padding: 0 1.5rem;
@@ -688,6 +757,7 @@
     <li><a href="#skills">Skills</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
 </nav>
 
 <!-- HERO -->
@@ -998,7 +1068,33 @@
 </footer>
 
 <script>
-  // Scroll reveal
+  // ── THEME ──
+  const root = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+
+  function getSystemPref() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function applyTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('theme', theme);
+  }
+
+  // On load: use saved pref, else system pref
+  applyTheme(localStorage.getItem('theme') || getSystemPref());
+
+  toggle.addEventListener('click', () => {
+    applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  // Listen for system changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
+  });
+
+  // ── SCROLL REVEAL ──
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
